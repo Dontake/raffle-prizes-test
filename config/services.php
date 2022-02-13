@@ -30,4 +30,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'bank_api' => [
+        'url' => env('BANK_API_URL'),
+        'token' => env('BANK_API_TOKEN')
+    ],
+
 ];

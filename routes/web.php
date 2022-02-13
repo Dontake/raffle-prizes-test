@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Web\Auth\AuthController;
+use App\Http\Controllers\Web\Raffle\RaffleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,7 +14,22 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::middleware('auth')->group(function() {
+    Route::get('/', function () {
+        return view('raffle');
+    });
 
-Route::get('/', function () {
-    return view('welcome');
+    Route::prefix('raffle')->group(function () {
+        Route::get('prize', [RaffleController::class, 'getPrize'])->name('get.raffle.prize');
+    });
+
+    Route::post('logout', [AuthController::class, 'logout'])
+        ->name('logout');
 });
+
+Route::post('login', [AuthController::class, 'login'])
+    ->name('auth.login');
+
+Route::get('auth', function () {
+    return view('auth.login');
+})->name('login');
