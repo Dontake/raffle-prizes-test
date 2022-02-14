@@ -35,10 +35,10 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => 'Email обязателен',
-            'email.email' => 'Введите валидный email',
-            'password.required' => 'Пароль обязателен',
-            'password.string' => 'Пароль должен быть строкой'
+            'email.required' => 'Email is required',
+            'email.email' => 'Not valid email',
+            'password.required' => 'Password required',
+            'password.string' => 'Password mast be of string type'
         ];
     }
 

@@ -21,7 +21,8 @@ class PrizeResource extends JsonResource
         /** @var PrizeDTO $this */
         return [
             'type' => $this->getType(),
-            'name' =>'',
+            'name' => $this->getName(),
+            'count' => $this->getCount()
         ];
     }
 }

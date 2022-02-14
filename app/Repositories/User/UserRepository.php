@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 class UserRepository implements UserRepositoryInterface
 {
     /**
+     * Get sponsor user id
      * @return int
      */
     public function getSponsorId(): int

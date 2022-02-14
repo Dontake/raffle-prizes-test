@@ -7,15 +7,16 @@ use App\Models\Article\Article;
 use App\Models\User\User;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use JetBrains\PhpStorm\Pure;
 
 /**
  * App\Models\Prize\Prize
  *
  * @property int $id
  * @property int $user_id
- * @property int $article_id
+ * @property int|null $article_id
  * @property string $type
  * @property string $status
  * @property float $count
@@ -62,19 +63,19 @@ class Prize extends BaseModel
     ];
 
     /**
-     * @return HasOne
+     * @return BelongsTo
      */
-    public function article(): HasOne
+    public function article(): BelongsTo
     {
-        return $this->hasOne(Article::class);
+        return $this->belongsTo(Article::class);
     }
 
     /**
-     * @return HasOne
+     * @return BelongsTo
      */
-    public function user(): HasOne
+    public function user(): BelongsTo
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -96,18 +97,18 @@ class Prize extends BaseModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getArticleId(): int
+    public function getArticleId(): ?int
     {
         return $this->article_id;
     }
 
     /**
-     * @param int $articleId
+     * @param int|null $articleId
      * @return Prize
      */
-    public function setArticleId(int $articleId): self
+    public function setArticleId(?int $articleId): self
     {
         $this->article_id = $articleId;
         return $this;
@@ -165,5 +166,11 @@ class Prize extends BaseModel
     {
         $this->count = $count;
         return $this;
+    }
+
+    #[Pure]
+    public function getName(): ?string
+    {
+        return $this->article_id ? $this->article->getName() : null;
     }
 }

@@ -12,20 +12,28 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends BaseController
 {
+    /**
+     * @var AuthInterface
+     */
     protected AuthInterface $authService;
 
+    /**
+     * @param AuthInterface $authService
+     */
     public function __construct(AuthInterface $authService)
     {
         $this->authService = $authService;
     }
 
     /**
+     * Login user
+     *
      * @param LoginRequest $request
      * @return string
      */
     public function login(LoginRequest $request): string
     {
-        if (!$this->authService->login($request->getEmail(), $request->getUserPassword())) {
+        if ($this->authService->login($request->getEmail(), $request->getUserPassword())) {
             $request->session()->regenerate();
             return redirect()->intended();
         }
@@ -36,6 +44,8 @@ class AuthController extends BaseController
     }
 
     /**
+     * Logout user
+     *
      * @param LoginRequest $request
      * @return Redirector|Application|RedirectResponse
      */

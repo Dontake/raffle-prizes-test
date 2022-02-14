@@ -20,7 +20,7 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             $table->integer('balance');
-            $table->decimal('monetary equivalent')->default(0.1);
+            $table->decimal('monetary_equivalent')->default(0.1);
             $table->string('currency', 3)->default('USD');
 
             $table->tinyInteger('is_active')->default(true);

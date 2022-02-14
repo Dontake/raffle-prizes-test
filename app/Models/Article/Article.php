@@ -6,7 +6,7 @@ use App\Models\BaseModel;
 use App\Models\Prize\Prize;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -35,14 +35,15 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Query\Builder|Article withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Article withoutTrashed()
  * @mixin Eloquent
+ * @property Carbon|null $created_at
  */
 class Article extends BaseModel
 {
     protected $guarded = ['id'];
 
-    public function prize(): BelongsTo
+    public function prize(): HasOne
     {
-        return $this->belongsTo(Prize::class);
+        return $this->hasOne(Prize::class);
     }
 
     /**

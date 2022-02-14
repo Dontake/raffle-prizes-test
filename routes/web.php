@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Web\Auth\AuthController;
+use App\Http\Controllers\Web\Prize\PrizeController;
 use App\Http\Controllers\Web\Raffle\RaffleController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,10 @@ Route::middleware('auth')->group(function() {
 
     Route::prefix('raffle')->group(function () {
         Route::get('prize', [RaffleController::class, 'getPrize'])->name('get.raffle.prize');
+    });
+
+    Route::prefix('prize')->group(function () {
+        Route::post('refuse', [PrizeController::class, 'refuse'])->name('prize.refuse');
     });
 
     Route::post('logout', [AuthController::class, 'logout'])

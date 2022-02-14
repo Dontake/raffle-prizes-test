@@ -8,7 +8,7 @@
     <title>Raffle Prize</title>
 </head>
 <body>
-<form method="GET" action="{{ route('get.ruffle.prize') }}">
+<form method="GET" action="{{ route('get.raffle.prize') }}">
     @csrf
     <p><input type="submit" value="Get Prize"></p>
 </form>

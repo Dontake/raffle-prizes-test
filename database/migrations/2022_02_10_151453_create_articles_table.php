@@ -27,6 +27,14 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::table('prizes', function (Blueprint $table) {
+            $table->foreignId('article_id')->nullable()
+                ->after('user_id')
+                ->constrained()
+                ->onDelete('set null')
+                ->onUpdate('cascade');
+        });
     }
 
     /**
@@ -36,6 +44,10 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::table('prizes', function (Blueprint $table) {
+            $table->dropForeign('prizes_article_id_foreign');
+        });
+
         Schema::dropIfExists('articles');
     }
 };

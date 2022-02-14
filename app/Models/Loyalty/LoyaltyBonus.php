@@ -6,11 +6,11 @@ use App\Models\BaseModel;
 use App\Models\User\User;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Loyalty\LoyaltyBonuses
+ * App\Models\Loyalty\LoyaltyBonus
  *
  * @property int id
  * @property int user_id
@@ -18,38 +18,46 @@ use Illuminate\Support\Carbon;
  * @property float monetary_equivalent
  * @property string currency
  * @property bool is_active
- * @property string $monetary equivalent
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read User|null $user
- * @method static Builder|LoyaltyBonuses newModelQuery()
- * @method static Builder|LoyaltyBonuses newQuery()
- * @method static \Illuminate\Database\Query\Builder|LoyaltyBonuses onlyTrashed()
- * @method static Builder|LoyaltyBonuses query()
- * @method static Builder|LoyaltyBonuses whereBalance($value)
- * @method static Builder|LoyaltyBonuses whereCreatedAt($value)
- * @method static Builder|LoyaltyBonuses whereCurrency($value)
- * @method static Builder|LoyaltyBonuses whereDeletedAt($value)
- * @method static Builder|LoyaltyBonuses whereId($value)
- * @method static Builder|LoyaltyBonuses whereIsActive($value)
- * @method static Builder|LoyaltyBonuses whereMonetaryEquivalent($value)
- * @method static Builder|LoyaltyBonuses whereUpdatedAt($value)
- * @method static Builder|LoyaltyBonuses whereUserId($value)
- * @method static \Illuminate\Database\Query\Builder|LoyaltyBonuses withTrashed()
- * @method static \Illuminate\Database\Query\Builder|LoyaltyBonuses withoutTrashed()
+ * @method static Builder|LoyaltyBonus newModelQuery()
+ * @method static Builder|LoyaltyBonus newQuery()
+ * @method static \Illuminate\Database\Query\Builder|LoyaltyBonus onlyTrashed()
+ * @method static Builder|LoyaltyBonus query()
+ * @method static Builder|LoyaltyBonus whereBalance($value)
+ * @method static Builder|LoyaltyBonus whereCreatedAt($value)
+ * @method static Builder|LoyaltyBonus whereCurrency($value)
+ * @method static Builder|LoyaltyBonus whereDeletedAt($value)
+ * @method static Builder|LoyaltyBonus whereId($value)
+ * @method static Builder|LoyaltyBonus whereIsActive($value)
+ * @method static Builder|LoyaltyBonus whereMonetaryEquivalent($value)
+ * @method static Builder|LoyaltyBonus whereUpdatedAt($value)
+ * @method static Builder|LoyaltyBonus whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|LoyaltyBonus withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|LoyaltyBonus withoutTrashed()
  * @mixin Eloquent
+ * @property int $id
+ * @property int $user_id
+ * @property int $balance
+ * @property string $monetary_equivalent
+ * @property string $currency
+ * @property int $is_active
  */
-class LoyaltyBonuses extends BaseModel
+class LoyaltyBonus extends BaseModel
 {
     protected $guarded = ['id'];
 
+    const DEFAULT_CURRENCY = 'USD';
+    const DEFAULT_MONETARY_EQUIVALENT = 0.1;
+
     /**
-     * @return HasOne
+     * @return BelongsTo
      */
-    public function user(): HasOne
+    public function user(): BelongsTo
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -71,7 +79,7 @@ class LoyaltyBonuses extends BaseModel
 
     /**
      * @param int $userId
-     * @return LoyaltyBonuses
+     * @return LoyaltyBonus
      */
     public function setUserId(int $userId): self
     {
@@ -89,7 +97,7 @@ class LoyaltyBonuses extends BaseModel
 
     /**
      * @param int $balance
-     * @return LoyaltyBonuses
+     * @return LoyaltyBonus
      */
     public function setBalance(int $balance): self
     {
@@ -107,7 +115,7 @@ class LoyaltyBonuses extends BaseModel
 
     /**
      * @param float $monetaryEquivalent
-     * @return LoyaltyBonuses
+     * @return LoyaltyBonus
      */
     public function setMonetaryEquivalent(float $monetaryEquivalent): self
     {
@@ -125,7 +133,7 @@ class LoyaltyBonuses extends BaseModel
 
     /**
      * @param string $currency
-     * @return LoyaltyBonuses
+     * @return LoyaltyBonus
      */
     public function setCurrency(string $currency): self
     {

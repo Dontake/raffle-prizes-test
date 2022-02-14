@@ -19,7 +19,6 @@ return new class extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
-            $table->unsignedBigInteger('article_id');
             $table->enum('type', ['money', 'loyalty_bonus', 'article']);
             $table->enum('status', ['raffled', 'sent', 'received']);
             $table->decimal('count')->default(0);

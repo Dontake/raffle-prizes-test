@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('user_cash_account', function (Blueprint $table) {
+        Schema::create('user_cash_accounts', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->foreignId('user_id')->constrained()
                 ->onUpdate('cascade')
@@ -39,6 +39,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_cash_account');
+        Schema::dropIfExists('user_cash_accounts');
     }
 };

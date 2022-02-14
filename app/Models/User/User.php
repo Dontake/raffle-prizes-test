@@ -6,7 +6,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
@@ -18,11 +18,11 @@ use Laravel\Sanctum\PersonalAccessToken;
 /**
  * App\Models\User\User
  *
- * @property $id
- * @property $name
- * @property $email
- * @property $created_at
- * @property $updated_at
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $remember_token
@@ -81,27 +81,35 @@ class User extends Authenticatable
     ];
 
     /**
-     * @return BelongsTo
+     * @return HasOne
      */
-    public function address(): BelongsTo
+    public function address(): HasOne
     {
-        return $this->belongsTo(UserAddress::class);
+        return $this->hasOne(UserAddress::class);
     }
 
     /**
-     * @return BelongsTo
+     * @return HasOne
      */
-    public function cashAccount(): BelongsTo
+    public function cashAccount(): HasOne
     {
-        return $this->belongsTo(UserCashAccount::class);
+        return $this->hasOne(UserCashAccount::class, '');
     }
 
     /**
-     * @return BelongsTo
+     * @return HasOne
      */
-    public function role(): BelongsTo
+    public function role(): HasOne
     {
-        return $this->belongsTo(UserRole::class);
+        return $this->hasOne(UserRole::class);
+    }
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     public function getName(): string

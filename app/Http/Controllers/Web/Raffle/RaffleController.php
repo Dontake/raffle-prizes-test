@@ -3,22 +3,28 @@
 namespace App\Http\Controllers\Web\Raffle;
 
 use App\Http\Controllers\Web\BaseController;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Resources\PrizeResource;
-use App\Services\Auth\AuthInterface;
 use App\Services\Raffle\RaffleInterface;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use JetBrains\PhpStorm\ArrayShape;
+use Throwable;
 
 class RaffleController extends BaseController
 {
-    public function __construct(protected RaffleInterface $ruffleService){}
+    /**
+     * @param RaffleInterface $raffleService
+     */
+    public function __construct(protected RaffleInterface $raffleService){}
 
     /**
-     * @return PrizeResource
+     * Get ruffle prize
+     *
+     * @return Factory|View|Application
+     * @throws Throwable
      */
-    public function getPrize(): PrizeResource
+    public function getPrize(): Factory|View|Application
     {
-        return  new PrizeResource($this->ruffleService->run(Auth::id()));
+        return view('prize', ['prize' => $this->raffleService->run(Auth::id())]);
     }
 }

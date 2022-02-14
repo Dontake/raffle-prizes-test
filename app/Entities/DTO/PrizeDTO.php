@@ -10,13 +10,17 @@ class PrizeDTO
      * @param string $type
      * @param string $status
      * @param float $count
+     * @param int|null $id
+     * @param string|null $name
      */
     public function __construct(
         private int $userId,
         private ?int $articleId,
         private string $type,
         private string $status,
-        private float $count
+        private float $count,
+        private ?int $id = null,
+        private ?string $name = null,
     ){}
 
     /**
@@ -57,5 +61,21 @@ class PrizeDTO
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
     }
 }
