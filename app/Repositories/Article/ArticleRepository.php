@@ -7,8 +7,8 @@ use Exception;
 
 class ArticleRepository implements ArticleRepoInterface
 {
+
     /**
-     * Get Article ids
      * @return array
      */
     public function getIds(): array
@@ -16,6 +16,7 @@ class ArticleRepository implements ArticleRepoInterface
         return Article::select('id')->where('count', '>', 0)
             ->sharedLock()
             ->toBase()
+            ->get()
             ->toArray();
     }
 
