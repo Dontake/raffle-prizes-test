@@ -44,9 +44,10 @@ class SendMoney extends Command
 
         /** @var Prize $money */
         foreach ($prize->getRaffledMoney($this->argument('count')) as $money) {
+            $checked = $prize->checkNotSent($money->id);
             $account = $money->user?->cashAccount?->getAccount();
 
-            if (!$account) {
+            if (!$account || !$checked) {
                 continue;
             }
 

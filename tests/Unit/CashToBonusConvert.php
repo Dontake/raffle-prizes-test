@@ -15,6 +15,8 @@ class CashToBonusConvert extends TestCase
     protected BonusService $bonusService;
     protected LoyaltyBonusRepository $bonusRepository;
 
+    private static int $expectedResult = 55;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -36,12 +38,11 @@ class CashToBonusConvert extends TestCase
     {
         $cashInt = 548;
         $defaultCurrency = 'USD';
-        $defaultResult = round($cashInt * $this->bonusRepository->getMonetaryEquivalent());
 
         $result = $this->bonusService->cashToBonusConvert($cashInt, $defaultCurrency);
 
         $this->assertIsInt($result);
-        $this->assertEquals($defaultResult, $result);
+        $this->assertEquals(self::$expectedResult, $result);
     }
 
     /**
@@ -61,6 +62,7 @@ class CashToBonusConvert extends TestCase
         $result = $this->bonusService->cashToBonusConvert($cashFloat, $defaultCurrency);
 
         $this->assertIsInt($result);
+        $this->assertEquals(self::$expectedResult, $result);
     }
 
     /**

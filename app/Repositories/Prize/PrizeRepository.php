@@ -42,46 +42,10 @@ class PrizeRepository implements PrizeRepoInterface
     public function getRaffledMoney(int $count): Collection|array
     {
         return Prize::with('user')->select('id', 'count', 'user_id')
-            ->where('type', $this->getMoneyType())
+            ->where('type', Prize::TYPE_MONEY)
             ->where('status', Prize::STATUS_RAFFLED)
             ->limit($count)
             ->get();
-    }
-
-    /**
-     * Get prize types
-     * @return array
-     */
-    public function getTypes(): array
-    {
-        return Prize::TYPES;
-    }
-
-    /**
-     * Get prize bonus type
-     * @return string
-     */
-    public function getBonusType(): string
-    {
-        return Prize::TYPE_LOYALTY_BONUS;
-    }
-
-    /**
-     * Get prize article type
-     * @return string
-     */
-    public function getArticleType(): string
-    {
-        return Prize::TYPE_ARTICLE;
-    }
-
-    /**
-     * Get prize money type
-     * @return string
-     */
-    public function getMoneyType(): string
-    {
-        return Prize::TYPE_MONEY;
     }
 
     /**
@@ -130,5 +94,19 @@ class PrizeRepository implements PrizeRepoInterface
             ->where('id', $id)
             ->first()
             ->getType();
+    }
+
+
+    /**
+     * Check status !== sent
+     * @param int $id
+     * @return bool
+     */
+    public function checkNotSent(int $id): bool
+    {
+        return Prize::where('id', $id)
+            ->where('status', '!=', Prize::STATUS_SENT)
+            ->sharedLock()
+            ->exists();
     }
 }

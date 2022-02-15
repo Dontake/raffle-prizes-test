@@ -34,25 +34,28 @@ class RafflePrizeService implements RaffleInterface
      * Run raffle prize
      *
      * @param int $userId
-     * @return PrizeDTO
+     * @return PrizeDTO|void
      * @throws Throwable
      */
-    public function run(int $userId): PrizeDTO
+    public function run(int $userId)
     {
-        $prize = $this->prize;
-        $prizeTypes = $prize->getTypes();
+        $randPrizeType = Prize::TYPES[rand(0, count(Prize::TYPES) - 1)];
 
         DB::beginTransaction();
 
-        $prize = match ($prizeTypes[rand(0, count($prizeTypes) - 1)]) {
-            $prize->getBonusType() => $this->raffleBonus($userId, rand(1000, 10000)),
-            $prize->getArticleType() => $this->raffleArticle($userId),
-            $prize->getMoneyType() => $this->raffleMoney($userId, rand(100, 1000))
-        };
+        try {
+            $prize = match ($randPrizeType) {
+                Prize::TYPE_LOYALTY_BONUS => $this->raffleBonus($userId, rand(1000, 10000)),
+                Prize::TYPE_ARTICLE => $this->raffleArticle($userId),
+                Prize::TYPE_MONEY => $this->raffleMoney($userId, rand(100, 1000))
+            };
 
-        DB::commit();
+            DB::commit();
 
-        return $prize;
+            return $prize;
+        } catch (Exception $e) {
+            DB::rollback();
+        }
     }
 
     /**
@@ -69,7 +72,7 @@ class RafflePrizeService implements RaffleInterface
         return $this->prize->save(new PrizeDTO(
             $userId,
             $articleId,
-            $this->prize->getArticleType(),
+            Prize::TYPE_ARTICLE,
             $this->status,
             1
         ));
@@ -88,7 +91,7 @@ class RafflePrizeService implements RaffleInterface
         return $this->prize->save(new PrizeDTO(
             $userId,
             null,
-            $this->prize->getBonusType(),
+            Prize::TYPE_MONEY,
             $this->status,
             $amount
         ));
@@ -108,7 +111,7 @@ class RafflePrizeService implements RaffleInterface
         return $this->prize->save(new PrizeDTO(
             $userId,
             null,
-            $this->prize->getMoneyType(),
+            Prize::TYPE_LOYALTY_BONUS,
             $this->status,
             $amount
         ));

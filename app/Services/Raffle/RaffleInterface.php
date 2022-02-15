@@ -11,8 +11,8 @@ interface RaffleInterface
      * Run raffle prize
      *
      * @param int $userId
-     * @return PrizeDTO
+     * @return PrizeDTO|void
      * @throws Throwable
      */
-    public function run(int $userId): PrizeDTO;
+    public function run(int $userId);
 }

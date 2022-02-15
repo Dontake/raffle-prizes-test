@@ -19,6 +19,38 @@ DB_USERNAME=
 DB_PASSWORD=
 ````
 
+## Nginx config
+````
+server {
+
+    listen      80;
+
+    server_name raffle-prizes.test;
+
+    location / {
+    	proxy_pass http://0.0.0.0:801/;
+
+    	proxy_set_header X-Real-IP $remote_addr;
+    	proxy_set_header X-Forwarded-for $remote_addr;
+    	proxy_set_header Host $host;
+    	proxy_connect_timeout 300;
+    	proxy_send_timeout 300;
+    	proxy_read_timeout 300;
+    	proxy_redirect off;
+    	proxy_set_header Connection close;
+    	proxy_pass_header Content-Type;
+    	proxy_pass_header Content-Disposition;
+    	proxy_pass_header Content-Length;
+    }
+    
+    location ~ /\.ht    {return 404;}
+    location ~ /\.svn/  {return 404;}
+    location ~ /\.git/  {return 404;}
+    location ~ /\.hg/   {return 404;}
+    location ~ /\.bzr/  {return 404;}
+}
+````
+
 ## Команды
 Поднять контейнеры
 ````

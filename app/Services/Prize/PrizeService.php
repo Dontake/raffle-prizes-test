@@ -2,11 +2,12 @@
 
 namespace App\Services\Prize;
 
+use App\Models\Prize\Prize;
 use App\Repositories\Prize\PrizeRepoInterface;
 use App\Services\Article\ArticleServiceInterface;
 use App\Services\Cash\CashAccountServiceInterface;
 use App\Services\Loyalty\LoyaltyBonusServiceInterface;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use Throwable;
 
@@ -43,15 +44,20 @@ class PrizeService implements PrizeServiceInterface
 
         DB::beginTransaction();
 
-        match ($this->prize->getCurrentType($id)) {
-            $this->prize->getMoneyType() => $this->cacheAccountService->decreaseBalance($userId, $countPrize),
-            $this->prize->getArticleType() => $this->articleService->increaseCount($userId),
-            $this->prize->getBonusType() => $this->bonusService->decreaseBalance($userId, $countPrize),
-        };
+        try {
+            match ($this->prize->getCurrentType($id)) {
+                Prize::TYPE_MONEY => $this->cacheAccountService->decreaseBalance($userId, $countPrize),
+                Prize::TYPE_ARTICLE => $this->articleService->increaseCount($userId),
+                Prize::TYPE_LOYALTY_BONUS => $this->bonusService->decreaseBalance($userId, $countPrize),
+            };
 
-        $this->prize->delete($id);
+            $this->prize->delete($id);
 
-        DB::commit();
+            DB::commit();
+
+        } catch (Exception $e) {
+            DB::rollback();
+        }
 
         return true;
     }

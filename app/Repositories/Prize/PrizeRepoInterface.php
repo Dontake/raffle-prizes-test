@@ -22,36 +22,12 @@ interface PrizeRepoInterface
     public function getRaffledMoney(int $count): Collection|array;
 
     /**
-     * Get prize types
-     * @return array
-     */
-    public function getTypes(): array;
-
-    /**
-     * Get prize bonus type
-     * @return string
-     */
-    public function getBonusType(): string;
-
-    /**
-     * Get prize article type
-     * @return string
-     */
-    public function getArticleType(): string;
-
-    /**
      * Get prize current type
      *
      * @param int $id
      * @return string
      */
     public function getCurrentType(int $id): string;
-
-    /**
-     * Get prize money type
-     * @return string
-     */
-    public function getMoneyType(): string;
 
     /**
      * Check exists prize
@@ -67,4 +43,11 @@ interface PrizeRepoInterface
      * @return bool
      */
     public function delete(int $id): bool;
+
+    /**
+     * Check status !== sent
+     * @param int $id
+     * @return bool
+     */
+    public function checkNotSent(int $id): bool;
 }
