@@ -7,8 +7,8 @@ use Exception;
 
 class ArticleRepository implements ArticleRepoInterface
 {
-
     /**
+     * Get article ids
      * @return array
      */
     public function getIds(): array
