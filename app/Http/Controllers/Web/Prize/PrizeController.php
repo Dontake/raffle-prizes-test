@@ -21,7 +21,6 @@ class PrizeController extends BaseController
      * Play prize
      * @throws Throwable
      */
-    #[ArrayShape(['result' => "bool"])]
     public function play(): Factory|View|Application
     {
         return view('prize', [
