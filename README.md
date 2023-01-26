@@ -83,8 +83,8 @@ php artisan token:generate
 
 ## Авторизация в приложении
 ````
-login: test@email.com
-password: 123456
+login: любой email из таблицы users
+password: password
 ````
 
 ## License
