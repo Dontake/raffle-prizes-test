@@ -8,16 +8,18 @@ use App\Models\User\User;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use JetBrains\PhpStorm\Pure;
+use function PHPUnit\Framework\isInstanceOf;
 
 /**
  * App\Models\Prize\Prize
  *
  * @property int $id
  * @property int $user_id
- * @property int|null $article_id
- * @property string $type
+ * @property int|null $playable_type
+ * @property string $playable_id
  * @property string $status
  * @property float $count
  * @property bool $is_active
@@ -48,129 +50,19 @@ class Prize extends BaseModel
 {
     protected $guarded = ['id'];
 
-    const TYPE_MONEY = 'money';
-    const TYPE_LOYALTY_BONUS = 'loyalty_bonus';
-    const TYPE_ARTICLE = 'article';
-
-    const STATUS_RAFFLED = 'raffled';
-    const STATUS_SENT = 'sent';
-    const STATUS_RECEIVED = 'received';
-
-    const TYPES = [
-        self::TYPE_MONEY,
-        self::TYPE_LOYALTY_BONUS,
-        self::TYPE_ARTICLE
-    ];
-
-    /**
-     * @return BelongsTo
-     */
-    public function article(): BelongsTo
+    public function playable(): MorphTo
     {
-        return $this->belongsTo(Article::class);
+        return $this->morphTo();
     }
 
-    /**
-     * @return BelongsTo
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * @return int
-     */
-    public function getUserId(): int
-    {
-        return $this->user_id;
-    }
-
-    /**
-     * @param int $userId
-     * @return Prize
-     */
-    public function setUserId(int $userId): self
-    {
-        $this->user_id = $userId;
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getArticleId(): ?int
-    {
-        return $this->article_id;
-    }
-
-    /**
-     * @param int|null $articleId
-     * @return Prize
-     */
-    public function setArticleId(?int $articleId): self
-    {
-        $this->article_id = $articleId;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param string $type
-     * @return Prize
-     */
-    public function setType(string $type): self
-    {
-        $this->type = $type;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStatus(): string
-    {
-        return $this->status;
-    }
-
-    /**
-     * @param string $status
-     * @return Prize
-     */
-    public function setStatus(string $status): self
-    {
-        $this->status = $status;
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getCount(): float
-    {
-        return $this->count;
-    }
-
-    /**
-     * @param float $count
-     * @return Prize
-     */
-    public function setCount(float $count): self
-    {
-        $this->count = $count;
-        return $this;
-    }
-
     #[Pure]
-    public function getName(): ?string
+    public function getName(): string
     {
-        return $this->article_id ? $this->article->getName() : null;
+        return $this->playable instanceof Article ? $this->playable->name : $this->playable_type;
     }
 }

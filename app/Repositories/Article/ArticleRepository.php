@@ -2,53 +2,42 @@
 
 namespace App\Repositories\Article;
 
+use App\Entities\Prize\Type\PrizeArticleTypeEntity;
 use App\Models\Article\Article;
-use Exception;
 
 class ArticleRepository implements ArticleRepoInterface
 {
     /**
-     * Get article ids
-     * @return array
+     * Get first article in random order
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function getIds(): array
+    public function firstRandom(): PrizeArticleTypeEntity
     {
-        return Article::select('id')->where('count', '>', 0)
+        $article = Article::where('count', '>', 0)
+            ->inRandomOrder()
             ->sharedLock()
-            ->toBase()
-            ->get()
-            ->toArray();
+            ->firstOrFail();
+
+        return (new PrizeArticleTypeEntity())->setId($article->id)
+            ->setName($article->name)
+            ->setCount($article->count)
+            ->setDescription($article->description)
+            ->setIsActive($article->is_active);
     }
 
     /**
      * Article count decreasing
-     *
-     * @param int $id
-     * @return bool|int
-     * @throws Exception
      */
-    public function decreaseCount(int $id): bool|int
+    public function decreaseCount(int $id, int $count = 1): bool|int
     {
-        $exist = Article::where('id', $id)
-            ->where('count', '!=', 0)
-            ->sharedLock()
-            ->exists();
-
-        if (!$exist) {
-            throw new Exception('Not found available articles');
-        }
-
-        return Article::find($id)->decrement('count');
+        return Article::where('id', $id)->decrement('count', $count);
     }
 
     /**
      * Article count increasing
-     *
-     * @param int $id
-     * @return bool|int
      */
-    public function increaseCount(int $id): bool|int
+    public function increaseCount(int $id, int $count = 1): bool|int
     {
-        return Article::find($id)->increment('count');
+        return Article::where('id', $id)->increment('count', $count);
     }
 }

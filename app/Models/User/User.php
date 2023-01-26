@@ -27,7 +27,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property string $password
  * @property string|null $remember_token
  * @property-read UserAddress|null $address
- * @property-read UserCashAccount|null $cashAccount
+ * @property-read UserWallet|null $cashAccount
  * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
  * @property-read UserRole|null $role
@@ -91,9 +91,9 @@ class User extends Authenticatable
     /**
      * @return HasOne
      */
-    public function cashAccount(): HasOne
+    public function wallet(): HasOne
     {
-        return $this->hasOne(UserCashAccount::class, '');
+        return $this->hasOne(UserWallet::class);
     }
 
     /**
@@ -102,46 +102,5 @@ class User extends Authenticatable
     public function role(): HasOne
     {
         return $this->hasOne(UserRole::class);
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     * @return User
-     */
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param string $email
-     * @return User
-     */
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-        return $this;
     }
 }

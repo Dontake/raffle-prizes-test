@@ -2,11 +2,8 @@
 
 namespace Database\Seeders;
 
-use Faker\Provider\Lorem;
+use App\Models\Article\Article;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class ArticleSeeder extends Seeder
 {
@@ -15,16 +12,8 @@ class ArticleSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
-        DB::table('articles')->where('name', 'like', 'fake%')->delete();
-
-        for ($i = 0; $i <= 10; $i++) {
-            DB::table('articles')->insertGetId([
-                'name' => Lorem::words(3, 'true'),
-                'description' => Lorem::words(5, 'true'),
-                'count' => rand(1, 10),
-            ]);
-        }
+        Article::factory()->count(100)->create();
     }
 }

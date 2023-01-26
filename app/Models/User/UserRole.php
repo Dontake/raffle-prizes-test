@@ -38,51 +38,8 @@ class UserRole extends BaseModel
 {
     protected $guarded = ['id'];
 
-    const NAME_SPONSOR = 'sponsor';
-    const NAME_ADMIN = 'admin';
-    const NAME_USER = 'user';
-
-    /**
-     * @return BelongsTo
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * @return int
-     */
-    public function getUserId(): int
-    {
-        return $this->user_id;
-    }
-
-    /**
-     * @param int $userId
-     * @return UserRole
-     */
-    public function setUserId(int $userId): self
-    {
-        $this->user_id = $userId;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     * @return UserRole
-     */
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-        return $this;
     }
 }

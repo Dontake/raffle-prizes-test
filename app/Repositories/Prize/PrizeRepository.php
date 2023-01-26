@@ -2,56 +2,60 @@
 
 namespace App\Repositories\Prize;
 
-use App\Entities\DTO\PrizeDTO;
+use App\Entities\Prize\PrizeEntity;
+use App\Entities\Prize\Type\PlayableEntityInterface;
+use App\Entities\Prize\Type\PrizeEntityFactory;
+use App\Enums\Prize\PrizeStatusEnum;
+use App\Enums\Prize\PrizeTypeEnum;
 use App\Models\Prize\Prize;
+use App\Services\Prize\Type\PrizeTypeFactory;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection;
 
 class PrizeRepository implements PrizeRepoInterface
 {
     /**
      * Save new Prize
-     * @param PrizeDTO $prizeDTO
-     * @return PrizeDTO
      */
-    public function save(PrizeDTO $prizeDTO): PrizeDTO
+    public function save(PrizeEntity $prizeEntity): PrizeEntity
     {
-        $newPrize = (new Prize())->setUserId($prizeDTO->getUserId())
-            ->setArticleId($prizeDTO->getArticleId())
-            ->setType($prizeDTO->getType())
-            ->setStatus($prizeDTO->getStatus())
-            ->setCount($prizeDTO->getCount());
+        $newPrize = new Prize();
+
+        $newPrize->user_id = $prizeEntity->getUserId();
+        $newPrize->playable_type = $prizeEntity->getType();
+        $newPrize->playable_id = $prizeEntity->getPlayableId();
+        $newPrize->count = $prizeEntity->getCount();
+        $newPrize->status = $prizeEntity->getStatus();
 
         $newPrize->save();
 
-        return new PrizeDTO(
-            $newPrize->getUserId(),
-            $newPrize->getArticleId(),
-            $newPrize->getType(),
-            $newPrize->getStatus(),
-            $newPrize->getCount(),
-            $newPrize->getId(),
+        return new PrizeEntity(
+            $newPrize->user_id,
+            $newPrize->playable_id,
+            $newPrize->playable_type,
+            $newPrize->status,
+            $newPrize->count,
+            $newPrize->id,
             $newPrize->getName()
         );
     }
 
     /**
-     * Get raffled prizes of money type
+     * Get played prizes of money type
      * @param int $count
      * @return Collection|array
      */
-    public function getRaffledMoney(int $count): Collection|array
+    public function getPlayedMoney(int $count): Collection|array
     {
         return Prize::with('user')->select('id', 'count', 'user_id')
-            ->where('type', Prize::TYPE_MONEY)
-            ->where('status', Prize::STATUS_RAFFLED)
+            ->where('type', PrizeTypeEnum::MONEY)
+            ->where('status', PrizeStatusEnum::PLAYED)
             ->limit($count)
             ->get();
     }
 
     /**
      * Check exists prize
-     * @param int $id
-     * @return bool
      */
     public function exists(int $id): bool
     {
@@ -60,9 +64,6 @@ class PrizeRepository implements PrizeRepoInterface
 
     /**
      * Detach curren user of prize
-     *
-     * @param int $id
-     * @return bool
      */
     public function delete(int $id): bool
     {
@@ -70,43 +71,30 @@ class PrizeRepository implements PrizeRepoInterface
     }
 
     /**
-     * Get prize current type
-     *
-     * @param int $id
-     * @return string
-     */
-    public function getCurrentType(int $id): string
-    {
-        return Prize::select('type')
-            ->where('id', $id)
-            ->first()
-            ->getType();
-    }
-
-    /**
-     * Get prize count
-     * @param int $id
-     * @return float
-     */
-    public function getCount(int $id): float
-    {
-        return Prize::select('count')
-            ->where('id', $id)
-            ->first()
-            ->getType();
-    }
-
-
-    /**
      * Check status !== sent
-     * @param int $id
-     * @return bool
      */
     public function checkNotSent(int $id): bool
     {
         return Prize::where('id', $id)
-            ->where('status', '!=', Prize::STATUS_SENT)
+            ->where('status', '!=', PrizeStatusEnum::SENT)
             ->sharedLock()
             ->exists();
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
+    public function getPlayable(int $id): PlayableEntityInterface
+    {
+        $prize = Prize::where('id', $id)
+            ->where('status', PrizeStatusEnum::PLAYED)
+            ->with('playable')
+            ->firstOrFail();
+
+        $playable = $prize->playable;
+        $playableEntity = PrizeEntityFactory::getEntity($playable::class);
+
+        return $playableEntity->setId($playable->getId())
+            ->setCount($playable->getCount());
     }
 }

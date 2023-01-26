@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Web\Prize;
 
 use App\Http\Controllers\Web\BaseController;
 use App\Http\Requests\Prize\PrizeRefuseRequest;
-use App\Services\Prize\PrizeServiceInterface;
-use App\Services\Raffle\RaffleInterface;
+use App\Http\Resources\PrizeResource;
+use App\Services\Prize\PrizeService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -15,16 +15,23 @@ use Throwable;
 
 class PrizeController extends BaseController
 {
+    public function __construct(protected PrizeService $prizeService){}
+
     /**
-     * @param PrizeServiceInterface $prizeService
+     * Play prize
+     * @throws Throwable
      */
-    public function __construct(protected PrizeServiceInterface $prizeService){}
+    #[ArrayShape(['result' => "bool"])]
+    public function play(): Factory|View|Application
+    {
+        return view('prize', [
+            'prize' => new PrizeResource($this->prizeService->play(Auth::id()))
+        ]);
+    }
 
     /**
      * Refuse from prize
-     *
-     * @param PrizeRefuseRequest $request
-     * @return array
+     * @throws Throwable
      */
     #[ArrayShape(['result' => "bool"])]
     public function refuse(PrizeRefuseRequest $request): array

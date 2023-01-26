@@ -2,34 +2,42 @@
 
 namespace App\Repositories\LoyaltyBonus;
 
+use App\Entities\Prize\Type\PrizeLoyaltyBonusTypeEntity;
+use App\Enums\LoyaltyBonus\LoyaltyBonusMonetaryEnum;
+use App\Enums\Wallet\WalletCurrencyEnum;
 use App\Models\Loyalty\LoyaltyBonus;
-use App\Models\User\UserCashAccount;
+use Throwable;
 
 class LoyaltyBonusRepository implements LoyaltyBonusRepoInterface
 {
     /**
      * Accrue bonuses for user
-     *
-     * @param int $userId
-     * @param float $amount
-     * @return bool
+     * @throws Throwable
      */
-    public function accrue(int $userId, float $amount): bool
+    public function accrue(int $userId, float $amount): PrizeLoyaltyBonusTypeEntity
     {
-        return LoyaltyBonus::firstOrNew(['user_id' => $userId])
-            ->increaseBalance($amount);
+        $bonus = LoyaltyBonus::firstOrNew(['user_id' => $userId]);
+        $bonus->balance += $amount;
+        $bonus->is_active = true;
+        $bonus->currency = WalletCurrencyEnum::USD;
+        $bonus->monetary_equivalent = LoyaltyBonusMonetaryEnum::USD_EQUIVALENT;
+
+        $bonus->saveOrFail();
+
+        return (new PrizeLoyaltyBonusTypeEntity())->setId($bonus->id)
+            ->setCount($bonus->balance)
+            ->setUserId($userId)
+            ->setIsActive($bonus->is_active)
+            ->setCurrency($bonus->currency)
+            ->setMonetaryEquivalent($bonus->monetary_equivalent);
     }
 
     /**
      * Balance checking
-     *
-     * @param int $userId
-     * @param float $amount
-     * @return bool
      */
-    public function checkBalance(int $userId, float $amount): bool
+    public function checkBalance(int $id, float $amount): bool
     {
-        return LoyaltyBonus::where('user_id', $userId)
+        return LoyaltyBonus::where('id', $id)
             ->where('balance', '>=', $amount)
             ->sharedLock()
             ->exists();
@@ -37,32 +45,10 @@ class LoyaltyBonusRepository implements LoyaltyBonusRepoInterface
 
     /**
      * Balance decreasing
-     *
-     * @param int $userId
-     * @param float $amount
-     * @return bool|int
      */
-    public function decreaseBalance(int $userId, float $amount): bool|int
+    public function decreaseBalance(int $id, float $amount): bool|int
     {
-        return LoyaltyBonus::where('user_id', $userId)
+        return LoyaltyBonus::where('id', $id)
             ->decrement('balance', $amount);
-    }
-
-    /**
-     * Get monetary equivalent of bonus
-     * @return string
-     */
-    public function getDefaultCurrency(): string
-    {
-        return LoyaltyBonus::DEFAULT_CURRENCY;
-    }
-
-    /**
-     * Get currency for monetary equivalent
-     * @return float
-     */
-    public function getMonetaryEquivalent(): float
-    {
-        return LoyaltyBonus::DEFAULT_MONETARY_EQUIVALENT;
     }
 }

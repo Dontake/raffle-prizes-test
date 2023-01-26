@@ -2,47 +2,23 @@
 
 namespace App\Repositories\LoyaltyBonus;
 
+use App\Entities\Prize\Type\PrizeLoyaltyBonusTypeEntity;
 use Exception;
 
 interface LoyaltyBonusRepoInterface
 {
     /**
      * Accrue bonuses for user
-     *
-     * @param int $userId
-     * @param float $amount
-     * @return bool
      */
-    public function accrue(int $userId, float $amount): bool;
-
-    /**
-     * Get monetary equivalent of bonus
-     * @return float
-     */
-    public function getMonetaryEquivalent(): float;
-
-    /**
-     * Get currency for monetary equivalent
-     * @return string
-     */
-    public function getDefaultCurrency(): string;
+    public function accrue(int $userId, float $amount): PrizeLoyaltyBonusTypeEntity;
 
     /**
      * Decreasing balance bonuses
-     *
-     * @param int $userId
-     * @param float $amount
-     * @return bool|int
-     * @throws Exception
      */
-    public function decreaseBalance(int $userId, float $amount): bool|int;
+    public function decreaseBalance(int $id, float $amount): bool|int;
 
     /**
      * Balance checking
-     *
-     * @param int $userId
-     * @param float $amount
-     * @return bool
      */
-    public function checkBalance(int $userId, float $amount): bool;
+    public function checkBalance(int $id, float $amount): bool;
 }

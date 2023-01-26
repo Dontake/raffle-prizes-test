@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Web\Auth\AuthController;
 use App\Http\Controllers\Web\Prize\PrizeController;
-use App\Http\Controllers\Web\Raffle\RaffleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,23 +16,18 @@ use Illuminate\Support\Facades\Route;
 */
 Route::middleware('auth')->group(function() {
     Route::get('/', function () {
-        return view('raffle');
-    });
-
-    Route::prefix('raffle')->group(function () {
-        Route::get('prize', [RaffleController::class, 'getPrize'])->name('get.raffle.prize');
-    });
+        return view('play');
+    })->name('home');
 
     Route::prefix('prize')->group(function () {
+        Route::get('play', [PrizeController::class, 'play'])->name('prize.play');
         Route::post('refuse', [PrizeController::class, 'refuse'])->name('prize.refuse');
     });
 
-    Route::post('logout', [AuthController::class, 'logout'])
-        ->name('logout');
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-Route::post('login', [AuthController::class, 'login'])
-    ->name('auth.login');
+Route::post('login', [AuthController::class, 'login'])->name('auth.login');
 
 Route::get('auth', function () {
     return view('auth.login');

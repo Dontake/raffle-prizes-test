@@ -6,7 +6,7 @@ use App\Models\BaseModel;
 use App\Models\Prize\Prize;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -41,62 +41,13 @@ class Article extends BaseModel
 {
     protected $guarded = ['id'];
 
-    public function prize(): HasOne
-    {
-        return $this->hasOne(Prize::class);
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     * @return Article
-     */
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param string $description
-     * @return Article
-     */
-    public function setDescription(string $description): self
-    {
-        $this->description = $description;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
     public function getCount(): int
     {
         return $this->count;
     }
 
-    /**
-     * @param int $count
-     * @return Article
-     */
-    public function setCount(int $count): self
+    public function prize(): MorphOne
     {
-        $this->count = $count;
-        return $this;
+        return $this->morphOne(Prize::class, 'playable');
     }
 }

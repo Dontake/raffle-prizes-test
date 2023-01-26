@@ -11,21 +11,19 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('prizes', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->foreignId('user_id')->constrained()
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
-            $table->enum('type', ['money', 'loyalty_bonus', 'article']);
-            $table->enum('status', ['raffled', 'sent', 'received']);
+            $table->morphs('playable');
+            $table->enum('status', ['played', 'sent', 'received']);
             $table->decimal('count')->default(0);
 
-            $table->tinyInteger('is_active')->default(true);
-
-            $table->index('type');
+            $table->boolean('is_active')->default(true);
 
             $table->timestamps();
             $table->softDeletes();
@@ -37,7 +35,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('prizes');
     }

@@ -2,27 +2,23 @@
 
 namespace App\Repositories\Article;
 
+use App\Entities\Prize\Type\PrizeArticleTypeEntity;
+
 interface ArticleRepoInterface
 {
     /**
-     * Get article ids
-     * @return array
+     * Get first article in random order
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function getIds(): array;
+    public function firstRandom(): PrizeArticleTypeEntity;
 
     /**
      * Article count decreasing
-     *
-     * @param int $id
-     * @return bool|int
      */
-    public function decreaseCount(int $id): bool|int;
+    public function decreaseCount(int $id, int $count): bool|int;
 
     /**
      * Article count increasing
-     *
-     * @param int $id
-     * @return bool|int
      */
-    public function increaseCount(int $id): bool|int;
+    public function increaseCount(int $id, int $count): bool|int;
 }

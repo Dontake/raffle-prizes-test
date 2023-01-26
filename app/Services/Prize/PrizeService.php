@@ -2,63 +2,57 @@
 
 namespace App\Services\Prize;
 
-use App\Models\Prize\Prize;
+use App\Entities\Prize\PrizeEntity;
+use App\Enums\Prize\PrizeStatusEnum;
+use App\Enums\Prize\PrizeTypeEnum;
 use App\Repositories\Prize\PrizeRepoInterface;
-use App\Services\Article\ArticleServiceInterface;
-use App\Services\Cash\CashAccountServiceInterface;
-use App\Services\Loyalty\LoyaltyBonusServiceInterface;
+use App\Services\Prize\Type\PrizeTypeFactory;
+use App\Services\Prize\Type\PrizeTypeService;
 use Illuminate\Support\Facades\DB;
-use Exception;
 use Throwable;
 
-class PrizeService implements PrizeServiceInterface
+class PrizeService
 {
-    /**
-     * @param PrizeRepoInterface $prize
-     * @param ArticleServiceInterface $articleService
-     * @param LoyaltyBonusServiceInterface $bonusService
-     * @param CashAccountServiceInterface $cacheAccountService
-     */
     public function __construct(
-        protected PrizeRepoInterface           $prize,
-        protected ArticleServiceInterface      $articleService,
-        protected LoyaltyBonusServiceInterface $bonusService,
-        protected CashAccountServiceInterface  $cacheAccountService
+        protected PrizeRepoInterface $prizeRepo,
+        protected PrizeTypeService $prizeTypeService
     ){}
+
+    /**
+     * Play prize
+     * @throws Throwable
+     */
+    public function play(int $userId): PrizeEntity
+    {
+        return DB::transaction(function () use($userId) {
+            $type = PrizeTypeEnum::AVAILABLE[rand(0, count(PrizeTypeEnum::AVAILABLE) - 1)];
+
+            $playable = $this->prizeTypeService->setType(PrizeTypeFactory::getService($type))
+                ->play($userId);
+
+            return $this->prizeRepo->save(new PrizeEntity(
+                $userId,
+                $playable->getId(),
+                $type,
+                PrizeStatusEnum::PLAYED,
+                $playable->getCount()
+            ));
+        });
+    }
 
     /**
      * Refuse from prize
      *
-     * @param int $id
-     * @param int $userId
-     * @return bool
      * @throws Throwable
      */
     public function refuse(int $id, int $userId): bool
     {
-        if (!$this->prize->exists($id)) {
-            throw new Exception('Prize not found');
-        }
+        return DB::transaction(function () use($id, $userId) {
+            $playable = $this->prizeRepo->getPlayable($id);
+            $this->prizeTypeService->setType(PrizeTypeFactory::getService(PrizeTypeEnum::ENTITIES[$playable::class]))
+                ->refuse($playable);
 
-        $countPrize = $this->prize->getCount($id);
-
-        DB::beginTransaction();
-
-        try {
-            match ($this->prize->getCurrentType($id)) {
-                Prize::TYPE_MONEY => $this->cacheAccountService->decreaseBalance($userId, $countPrize),
-                Prize::TYPE_ARTICLE => $this->articleService->increaseCount($userId),
-                Prize::TYPE_LOYALTY_BONUS => $this->bonusService->decreaseBalance($userId, $countPrize),
-            };
-
-            $this->prize->delete($id);
-
-            DB::commit();
-
-        } catch (Exception $e) {
-            DB::rollback();
-        }
-
-        return true;
+            return $this->prizeRepo->delete($id);
+        });
     }
 }

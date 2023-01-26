@@ -2,8 +2,8 @@
 
 namespace App\Repositories\User;
 
+use App\Enums\User\UserRoleEnum;
 use App\Models\User\User;
-use App\Models\User\UserRole;
 use Illuminate\Database\Eloquent\Builder;
 
 class UserRepository implements UserRepositoryInterface
@@ -14,10 +14,10 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getSponsorId(): int
     {
-        return User::whereHas('role', function (Builder $query) {
-            $query->where('name', UserRole::NAME_SPONSOR);
+        return User::query()->select('id')->whereHas('role', function (Builder $query) {
+            $query->where('name', UserRoleEnum::SPONSOR);
         })
             ->first()
-            ->getId();
+            ->id;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\Wallet\WalletCurrencyEnum;
+use App\Enums\LoyaltyBonus\LoyaltyBonusMonetaryEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,21 +13,21 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('loyalty_bonuses', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->foreignId('user_id')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
             $table->integer('balance');
-            $table->decimal('monetary_equivalent')->default(0.1);
-            $table->string('currency', 3)->default('USD');
+            $table->decimal('monetary_equivalent')->default(LoyaltyBonusMonetaryEnum::USD_EQUIVALENT);
+            $table->string('currency', 3)->default(WalletCurrencyEnum::USD);
 
-            $table->tinyInteger('is_active')->default(true);
+            $table->boolean('is_active')->default(true);
 
-            $table->index(['user_id', 'balance']);
+            $table->index(['user_id', 'balance', 'currency']);
 
             $table->timestamps();
             $table->softDeletes();
@@ -37,7 +39,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('loyalty_bonuses');
     }

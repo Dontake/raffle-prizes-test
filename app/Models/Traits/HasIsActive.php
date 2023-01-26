@@ -2,8 +2,6 @@
 
 namespace App\Models\Traits;
 
-use App\Models\Prize\Prize;
-
 trait HasIsActive
 {
     /**
@@ -16,9 +14,9 @@ trait HasIsActive
 
     /**
      * @param bool $isActive
-     * @return Prize
+     * @return self
      */
-    public function setIsActive(bool $isActive): self
+    public function setIsActive(bool $isActive): static
     {
         $this->is_active = $isActive;
         return $this;

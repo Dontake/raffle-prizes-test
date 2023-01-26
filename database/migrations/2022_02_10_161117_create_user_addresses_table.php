@@ -11,21 +11,21 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('user_addresses', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->foreignId('user_id')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->string('postcode');
+            $table->string('postcode', 255);
             $table->string('country', 255);
-            $table->string('town', 255);
+            $table->string('city', 255);
             $table->string('address');
 
-            $table->tinyInteger('default')->default(true);
-            $table->tinyInteger('is_active')->default(true);
+            $table->boolean('default')->default(true);
+            $table->boolean('is_active')->default(true);
 
             $table->index(['user_id', 'postcode']);
 
@@ -39,7 +39,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('user_addresses');
     }
